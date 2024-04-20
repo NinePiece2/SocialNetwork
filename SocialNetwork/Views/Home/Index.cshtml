@@ -45,14 +45,18 @@
             var loginButton = document.getElementById('loginButton');
             var registerButton = document.getElementById('registerButton');
 
-            if (form.style.display === 'block') {
+            if (formId === 'loginForm') {
+                form.style.display = 'block';
+                loginButton.style.display = 'none';
+                registerButton.style.display = 'block';
+            } else if (formId === 'registerForm') {
+                form.style.display = 'block';
+                loginButton.style.display = 'block';
+                registerButton.style.display = 'none';
+            } else {
                 form.style.display = 'none';
                 loginButton.style.display = 'block';
                 registerButton.style.display = 'block';
-            } else {
-                form.style.display = 'block';
-                loginButton.style.display = 'none';
-                registerButton.style.display = 'none';
             }
         }
     </script>

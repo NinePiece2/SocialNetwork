@@ -52,7 +52,7 @@ namespace SocialNetwork.Controllers
                 if (user != null)
                 {
                     // Implement session or authentication logic here
-                    return RedirectToAction("Index", "Home"); // Adjust as needed
+                    return RedirectToAction("Feed", "Home"); // Adjust as needed
                 }
                 ModelState.AddModelError("", "Invalid email/username or password");
                 ViewBag.Error = "Invalid email/username or password";
