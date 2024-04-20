@@ -1,0 +1,39 @@
+name: ASP.NET Framework Build and Deploy
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:    
+    runs-on: [self-hosted]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
+      
+    - name: setup-msbuild
+      uses: microsoft/setup-msbuild@v2
+    
+    - name: Restore Packages
+      run: nuget restore SocialNetwork.sln
+    
+    - name: Build solution
+      run: msbuild SocialNetwork.sln -t:rebuild -property:Configuration=Release -p:DeployOnBuild=true -p:WebPublishMethod=Package -p:PackageAsSingleFile=true -p:SkipInvalidConfigurations=true -p:PackageLocation="${{ github.workspace }}/deploy"
+
+  deploy:
+    needs: build
+    runs-on: [self-hosted]
+    
+    steps:    
+    - name: Deploy to IIS
+      # run: Expand-Archive -Path '${{ github.workspace }}/deploy/Offline-CDN' -DestinationPath 'C:\Users\Romit\Documents\Deployments\Offline-CDN'
+      # run: Copy-Item ${{ github.workspace }}/deploy/Offline-CDN/* C:\Users\Romit\Documents\Deployments\Offline-CDN -Recurse -Force
+      run: msdeploy -verb:sync -source:package="${{ github.workspace }}\deploy\SocialNetwork.sln.zip" -dest:auto -setParam:name=`"IIS Web Application Name`",value=Social Network
