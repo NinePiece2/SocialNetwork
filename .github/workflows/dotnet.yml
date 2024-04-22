@@ -32,6 +32,4 @@ jobs:
     
     steps:    
     - name: Deploy to IIS
-      # run: Expand-Archive -Path '${{ github.workspace }}/deploy/Offline-CDN' -DestinationPath 'C:\Users\Romit\Documents\Deployments\Offline-CDN'
-      # run: Copy-Item ${{ github.workspace }}/deploy/Offline-CDN/* C:\Users\Romit\Documents\Deployments\Offline-CDN -Recurse -Force
       run: msdeploy -verb:sync -source:package="${{ github.workspace }}\deploy\SocialNetwork.zip" -dest:auto -setParam:name=`"IIS Web Application Name`",value=`"Social Network`"
