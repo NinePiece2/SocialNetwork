@@ -18,7 +18,7 @@ jobs:
       uses: microsoft/setup-msbuild@v2
       
     - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.5
+      uses: NuGet/setup-nuget@v2
     
     - name: Restore Packages
       run: nuget restore SocialNetwork.sln
