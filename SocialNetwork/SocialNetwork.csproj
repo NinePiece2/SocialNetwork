@@ -186,6 +186,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Model.cs" />
     <Compile Include="Models\DBModel\ApplicationUser.cs" />
     <Compile Include="Models\DBModel\EmailServiceModel.Context.cs">
       <AutoGen>True</AutoGen>
@@ -328,6 +329,7 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\PopUpModel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -70,6 +70,7 @@ namespace SocialNetwork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -88,6 +89,14 @@ namespace SocialNetwork.Controllers
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(userName, model.Password, model.RememberMe, shouldLockout: false);
+            var emailConfirmed = await UserManager.IsEmailConfirmedAsync(UserManager.FindByName(userName).Id);
+
+            if (!emailConfirmed)
+            {
+                ModelState.AddModelError("", "You must have a confirmed email to log on.");
+                return View(model);
+            }
+
             switch (result)
             {
                 case SignInStatus.Success:
@@ -176,27 +185,25 @@ namespace SocialNetwork.Controllers
         {
             if (ModelState.IsValid)
             {
-                MailAddress address = new MailAddress(model.Email);
-                string userName = address.User;
                 var user = new ApplicationUser { 
-                    UserName = userName, 
+                    UserName = model.Username, 
                     Email = model.Email,
                     FirstName = model.FirstName,
-                    LastName = model.LastName
+                    LastName = model.LastName,
                 };
 
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+                    //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    await UserManager.SendEmailAsync(user.Id, "Confirm your account", getConfirmEmailBody(callbackUrl));
+                    await UserManager.SendEmailAsync(user.Id, "Confirm Your Account", getConfirmEmailBody(callbackUrl));
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Login", "Account");
                 }
                 AddErrors(result);
             }
@@ -236,6 +243,12 @@ namespace SocialNetwork.Controllers
                 </html>";
 
             return htmlContent;
+        }
+
+        public ActionResult RenderPopUpModel()
+        {
+            Models.PopUpModel modal = new Models.PopUpModel { ID = "PopUpModel", textArea = false, cancelBtnMessage = "Cancel", confirmBtnMessage = "Refresh", reminderText = "Please Refresh the Page", refresh = true };
+            return PartialView("~/Views/Shared/PopUpModel.cshtml", modal);
         }
 
         //
