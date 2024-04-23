@@ -13,8 +13,17 @@ namespace SocialNetwork.Controllers
             return View();
         }
 
-        public ActionResult Feed()
+        public ActionResult About()
         {
+            ViewBag.Message = "Your application description page.";
+
+            return View();
+        }
+
+        public ActionResult Contact()
+        {
+            ViewBag.Message = "Your contact page.";
+
             return View();
         }
     }
