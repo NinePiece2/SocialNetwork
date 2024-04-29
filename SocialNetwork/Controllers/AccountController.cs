@@ -203,9 +203,16 @@ namespace SocialNetwork.Controllers
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
-                    var baseURL = System.Configuration.ConfigurationManager.AppSettings["BASE_URL"];
+                    var hostName = System.Configuration.ConfigurationManager.AppSettings["HOST_NAME"];
                     string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new RouteValueDictionary(new { userId = user.Id, code = code }), protocol: Request.Url.Scheme, hostName: baseURL);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new RouteValueDictionary(new { userId = user.Id, code = code }), protocol: Request.Url.Scheme, hostName: hostName);
+
+                    var uriBuilder = new UriBuilder(callbackUrl)
+                    {
+                        Port = -1 // Set the port to -1 to remove it from the URL
+                    };
+                    callbackUrl = uriBuilder.Uri.ToString();
+
                     await UserManager.SendEmailAsync(user.Id, "Confirm Your Account", getConfirmEmailBody(callbackUrl));
 
                     return RedirectToAction("Login", "Account");
