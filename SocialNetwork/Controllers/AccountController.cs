@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using SocialNetwork.Models;
 using SocialNetwork.Models.DBModel;
+using System.Web.Routing;
 
 namespace SocialNetwork.Controllers
 {
@@ -186,8 +187,9 @@ namespace SocialNetwork.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { 
-                    UserName = model.Username, 
+                var user = new ApplicationUser
+                {
+                    UserName = model.Username,
                     Email = model.Email,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
@@ -196,12 +198,14 @@ namespace SocialNetwork.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    // Disable AutoSignin After Register
                     //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
+                    var baseURL = System.Configuration.ConfigurationManager.AppSettings["BASE_URL"];
                     string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new RouteValueDictionary(new { userId = user.Id, code = code }), protocol: Request.Url.Scheme, hostName: baseURL);
                     await UserManager.SendEmailAsync(user.Id, "Confirm Your Account", getConfirmEmailBody(callbackUrl));
 
                     return RedirectToAction("Login", "Account");
